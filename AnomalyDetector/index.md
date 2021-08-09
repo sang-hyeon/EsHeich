@@ -1,3 +1,5 @@
+> 이 문서는 아직 작성 중입니다.
+
 # 개요
 이상 감지기(Anomaly Detector)는 CCTV와 같은 스트리밍을 실시간으로 분석하여 특정 이상을 분석하는 감지기입니다.
 
@@ -7,7 +9,6 @@
 
 또한 Micoroservices, SOA 또는 분산 아키텍처와 같은 내용을 배제합니다.
 이 사례는 Service 단위의 Application 구성을 이야기하기에 구현에 대해 어느것을 선택해도 문제가 되지 않습니다.
-
 그러나 특정 이유에서 Container 및 Kubernetes와 같은 Container Ochestration은 필수 항목으로 선택할 수 있습니다.
 
 진행된 프로젝트는 Cloud에서 Hosting 되지 않았으며 자체적인 물리적 컴퓨팅 리소스 환경과 네트워크로 구성되었습니다.
@@ -74,9 +75,8 @@ Streaming Service는 IP Camera로부터 수신받는 Frame에 Time stamp를 찍�
 Streaming은 FPS만큼 일정한 수준으로 실시간 발송되기에 Source code 수준에서 이러한 Hot code path는 필수적인 최적화 대상입니다. 
 
 # Detector Pool & Detector Aggregate
-Detector App은 Streaming되는 영상 내 특정 Roi 하나를 Inference하는 Application입니다. 
 
-Inference를 위한 Detector는 Machine Learning을 활용하기에 GPU를 사용합니다.
+# Publish a new model
 
 
 
