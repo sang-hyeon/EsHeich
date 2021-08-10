@@ -66,9 +66,9 @@ Service들간의 통합 이벤트 (Integration Event)를 교환합니다. 저는
 
 이러한 이유로 인해 가장 첫번째로 구축해야하는건 Streaming에 대한 조정을 담당하는 Service입니다.
 
-제가 사용했던 IP Camera는 다수의 구독자가 발생할 때 영상의 질이 저하됩니다. 때때로 초당 Frame의 개수 또한 보장 받지 못했습니다. 앞서 언급했던 이유 때문에 이것을 처리할 수 있는 Service는 필수 사항입니다. 여러분이 IP Camera를 사용한다면 이러한 사항을 피할 수 없을 것입니다.
+제가 사용했던 IP Camera는 다수의 구독자가 발생할 때 영상의 품질이 저하됩니다. 때때로 초당 Frame의 개수 또한 보장 받지 못했습니다. 또한 여러 구독자가 연결되었을때 각 구독자들에게 동일한 영상을 제공하지 못합니다. 이러한 문제 때문에 여러분은 실제 Live Source에 대한 Connection을 단 한개로 유지해야합니다. 
 
-Streaming Service는 시스템 내 다른 Service들이 구독할 수 있는 Endpoint를 노출합니다. Streaming Service는 이 Endpoint를 통해 구독하는 모든 Service들에게 동일한 Frame을 전달하게 됩니다. 
+Streaming Service는 실제 Live Source와 단 한번의 연결점을 갖습니다. 그리고 시스템 내 다른 Service들이 구독할 수 있는 Endpoint를 노출합니다. Streaming Service는 이 Endpoint를 통해 구독하는 모든 Service들에게 동일한 Frame Data를 전달하게 됩니다. 앞서 언급했던 이유 때문에 이러한 Service는 필수 사항입니다. 여러분이 IP Camera를 사용한다면 이러한 사항은 피할 수 없을 것입니다.
 
 또한 Stsreaming Service는 이 Frame data를 재 정의 합니다.
 일반적으로 Streaming에서 사용하는 프로토콜 RTSP는 당시 Frame의 시간을 포함하지 않습니다. 그리고 제가 사용했던 Video codec 또한 그랬습니다. 그렇다고 구독하는 Service들에게 전달 받았던 시간을 사용하게해서는 안됩니다. Frame Data의 일관성이 깨지기 때문입니다. 
@@ -78,6 +78,8 @@ Streaming Service는 IP Camera로부터 수신받는 Frame에 Time stamp를 찍�
 제가 사용했던 .Net 5는 Buffer, RecyclingMemoryStream, ArrayPool, ObjectPool, Span과 같은 최적화 도구를 다량 지원하기에 매우 용이했습니다.
 
 Streaming은 FPS만큼 일정한 수준으로 실시간 발송되기에 Source code 수준에서 이러한 Hot code path는 필수적인 최적화 대상입니다. 
+
+또한 Service들간에 이 Frame Data가 이동하는 경로를 최소화하십시오.
 
 다시 한번 말하지만, 이 시스템에서 Frame Data보다 중요한 Data는 없습니다.
 
