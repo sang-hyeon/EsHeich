@@ -3,15 +3,15 @@
 # 개요
 이상 감지기(Anomaly Detector)는 CCTV와 같은 카메라로부터 송출되는 스트리밍을 실시간으로 분석하여 Anomaly를 검출합니다.
 
-이 문서는 이상 감지기 구축에 대한 경험을 바탕으로 해당 시스템을 Architecturing한 사례를 이야기합니다. 몇가지 범용적이지 않은 사항들은 제거되었지만 사례를 살펴보는데에 문제는 없다고 생각합니다. 
+이 문서는 이상 감지기 구축에 대한 경험을 바탕으로 해당 시스템을 Architecturing한 사례를 이야기합니다. 
+이것을 통해 이와 비슷한 시스템에서 발생할 수 있는 문제를 미연에 방지할 수 있습니다.
+몇가지 범용적이지 않은 사항들은 제거되었지만 사례를 살펴보는데에 문제는 없다고 생각합니다.
 
-이 문서는 이와 비슷한 시스템에서 발생할 수 있는 문제를 미연에 방지하도록 하는 것이 목적입니다.
+제 사례는 여러분들이 구축해야하는 이상 감지기의 요구 사항과 다를 것입니다. 최대한 일반화된 내용을 다루기 위해 노력하였습니다.
 
 또한 Micoroservices, SOA 또는 분산 아키텍처와 같은 내용을 배제합니다.
 이 사례는 Service 단위의 Application 구성을 이야기하기에 구현에 대해 어느것을 선택해도 문제가 되지 않습니다.
 그러나 특정 이유에서 Container 및 Kubernetes와 같은 Container Ochestration은 필수 항목으로 선택할 수 있습니다.
-
-진행된 프로젝트는 Cloud에서 Hosting 되지 않았으며 자체적인 컴퓨팅 리소스 환경과 네트워크로 구성되었습니다.
 
 이상 감지기의 영상 분석을 위해 일반적으로 고전적인 방식의 Vision을 선택할 수도 있지만, 여기에서는 Machine Learning을 활용한 사례를 이야기합니다.
 
@@ -25,6 +25,8 @@
 전처리 역할로 수행되며 View Layer는 이를 반영하게 됩니다.
 
 이 이상 감지기 프로젝트는 감지기뿐만 아니라 자체적인 Training과 Model 발행까지 포함합니다.
+
+진행된 프로젝트는 Cloud에서 Hosting 되지 않았으며 자체적인 컴퓨팅 리소스 환경과 네트워크로 구성되었습니다.
 
 카메라는 디지털 처리가 포함된 IP Camera가 사용되었으며 이 감지기가 처리하는 Camera는 50 ~ 100개로 유동적입니다.
 
@@ -50,6 +52,9 @@ Detector Pool은 사용 가능하거나 검사 중인 Detector들이 위치합�
 * Client <br>
 이 시스템의 Client는 100개 이상의 카메라를 Player로 표시하며 검사 시작과 중지 그리고 Anomaly가 발생한 지역을 확인할 수 있도록 합니다. 또한 발생했던 과거 Anomaly들을 확인할 수 있으며 그에 대한 영상을 열람할 수 있습니다.
 
+* Message Broker <br>
+Service들간의 통합 이벤트 (Integration Event)를 교환합니다. 저는 이 시스템 또한 일반적인 Microservices에서 해결법으로 사용되어지는 최종 일관성(Eventual consistency)으로 문제가 없다고 생각하였습니다. 
+
 <br>
 
 # 일급 데이터
@@ -57,7 +62,7 @@ Detector Pool은 사용 가능하거나 검사 중인 Detector들이 위치합�
 
 예를들어 Frame Data의 일관성이 보장되지 못한다면 Streaming을 구독하여 분석, 처리하는 이하 모든 Service들의 결과는 일치하지 않을 것입니다.
 
-일치하지 않을 때 발생할 수 있는 한가지 예는 유지 보수 단계에 있습니다. 미검출된 Anomaly의 원인을 분석하려할때 기록되었던 과거 영상은 무용지물입니다. 발생했던 당시의 데이터와 기록된 데이터는 동일하지 않기 때문입니다.
+일치하지 않을 때 발생할 수 있는 한가지 예는 유지 보수 단계에 있습니다. 미검출된 Anomaly의 원인을 분석하려할때 기록되었던 과거 영상은 무용지물입니다. 발생했던 당시의 데이터와 기록된 데이터가 동일하지 않기 때문입니다.
 
 이러한 이유로 인해 가장 첫번째로 구축해야하는건 Streaming에 대한 조정을 담당하는 Service입니다.
 
@@ -74,10 +79,13 @@ Streaming Service는 IP Camera로부터 수신받는 Frame에 Time stamp를 찍�
 
 Streaming은 FPS만큼 일정한 수준으로 실시간 발송되기에 Source code 수준에서 이러한 Hot code path는 필수적인 최적화 대상입니다. 
 
-# Detector Pool & Detector Aggregate
+다시 한번 말하지만, 이 시스템에서 Frame Data보다 중요한 Data는 없습니다.
+
+# Inference Pool & Inference Aggregate
 
 # Publish a new model
 
+# 무중단 전략
 
 
 
